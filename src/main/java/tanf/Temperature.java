@@ -12,21 +12,39 @@ public class Temperature {
 
     public static void main(String[] args) {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(new File(args[0])));
+            File file = new File("c:\\work\\cleancodeown\\src\\main\\resources\\datamunging\\weather.dat");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
             String line = null;
-            int i = 0;
-            List<TemperatureData> homersekletAdatList = new ArrayList<>();
-            List<Integer> avarages = new ArrayList<>();
-            while ((line = br.readLine())!= null){
-                if (i > 0){
-                    String[] lineData = line.split(" ");
-                    TemperatureData adat = new TemperatureData();
-                    adat.setMnt(Integer.parseInt(lineData[2]));
-                    adat.setMxt(Integer.parseInt(lineData[1]));
+            List<TemperatureData> temperatureDataList = new ArrayList<TemperatureData>();
+            while ((line = br.readLine()) != null) {
+                if (!line.isEmpty()) {
+                    //System.out.println("Original line: [" + line + "]");
+                    line = line.replaceAll("\\s+", " ").trim();
+                    //System.out.println("Modified line: [" + line + "]");
+                    String[] lineData = line.split(" ");    //de csak mert az elso 3 oszlop kell es ott jo igy
+                    System.out.println("Nap/max/min = [" + lineData[0] + "][" + lineData[1] + "][" + lineData[2] + "]");
+                    if (lineData[0].matches("[0-9]+")) {
+                        TemperatureData tData = new TemperatureData();
+                        tData.setDay(parseTemperature(lineData[0]));
+                        tData.setMxt(parseTemperature(lineData[1]));
+                        tData.setMnt(parseTemperature(lineData[2]));
+                        tData.setMinMaxDiff(tData.getDifference());
+                        temperatureDataList.add(tData);
+                    }
                 }
-                i++;
             }
 
+            int day = -1;
+            int minDiff = 1000;
+            for(TemperatureData td: temperatureDataList){
+                if (minDiff > td.getDifference()) {
+                    minDiff = td.getDifference();
+                    day = td.getDay();
+                }
+            }
+
+            System.out.println("Melyik napon a lekisebb a homerseklet kulonbseg: " + day);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -36,9 +54,7 @@ public class Temperature {
     }
 
     public static int parseTemperature(String adat){
-        if(adat.contains("*")){
-            adat = adat.substring(0, adat.indexOf("*"));
-        }
+        adat = adat.replaceAll("[^0-9.-]", "");
         return Integer.parseInt(adat);
     }
 }
