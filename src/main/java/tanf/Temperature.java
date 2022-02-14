@@ -25,32 +25,33 @@ public class Temperature {
                     String[] lineData = line.split(" ");    //de csak mert az elso 3 oszlop kell es ott jo igy
                     System.out.println("Nap/max/min = [" + lineData[0] + "][" + lineData[1] + "][" + lineData[2] + "]");
                     if (lineData[0].matches("[0-9]+")) {
-                        TemperatureData tData = new TemperatureData();
-                        tData.setDay(parseTemperature(lineData[0]));
-                        tData.setMxt(parseTemperature(lineData[1]));
-                        tData.setMnt(parseTemperature(lineData[2]));
-                        tData.setMinMaxDiff(tData.getDifference());
+                        TemperatureData tData = new TemperatureData(lineData);
                         temperatureDataList.add(tData);
                     }
                 }
             }
 
-            int day = -1;
-            int minDiff = 1000;
-            for(TemperatureData td: temperatureDataList){
-                if (minDiff > td.getDifference()) {
-                    minDiff = td.getDifference();
-                    day = td.getDay();
-                }
-            }
+            int resultDay = findMinDiff(temperatureDataList);
 
-            System.out.println("Melyik napon a lekisebb a homerseklet kulonbseg: " + day);
+            System.out.println("Melyik napon a lekisebb a homerseklet kulonbseg: " + resultDay);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static int findMinDiff(List<TemperatureData> temperatureDataList) {
+        int day = -1;
+        int minDiff = 1000;
+        for(TemperatureData td: temperatureDataList){
+            if (minDiff > td.getDifference()) {
+                minDiff = td.getDifference();
+                day = td.getDay();
+            }
+        }
+        return day;
     }
 
     public static int parseTemperature(String adat){

@@ -6,6 +6,13 @@ public class TemperatureData {
     private int mnt;
     private int minMaxDiff;
 
+    public TemperatureData(String[] temperatureLine) {
+        this.day = parseTemperature(temperatureLine[0]);
+        this.mnt = parseTemperature(temperatureLine[2]);
+        this.mxt = parseTemperature(temperatureLine[1]);
+        this.minMaxDiff = getDifference();
+    }
+
     public int getMxt() {
         return mxt;
     }
@@ -40,5 +47,10 @@ public class TemperatureData {
 
     public int getDifference() {
         return this.getMxt() - this.getMnt();
+    }
+
+    public int parseTemperature(String temperature){
+        temperature = temperature.replaceAll("[^0-9.-]", "");
+        return Integer.parseInt(temperature);
     }
 }
